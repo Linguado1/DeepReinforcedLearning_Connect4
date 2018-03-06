@@ -4,7 +4,7 @@ memory_version = 1;
 memory_size = 30000;
 memory = Memory(memory_size);
 
-save(sprintf([pwd '\Memory\Memory_Connect4_v%.2d.mat'],memory_version), 'memory')
+save([pwd '\Memory\' sprintf('Memory_Connect4_v%.2d.mat',memory_version)], 'memory')
 
 %% Init Neural Network
 model_version = 1;
@@ -33,7 +33,7 @@ model.NNProb = NNProb;
 
 blank_model = model;
 
-save(sprintf([pwd '\Models\Model_Connect4_v%.2d.mat'],model_version), 'model', 'blank_model')
+save([pwd '\Model\' sprintf('Model_Connect4_v%.2d.mat',model_version)], 'model', 'blank_model')
 
 %% Save config variales
 

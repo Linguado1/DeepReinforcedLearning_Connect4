@@ -17,8 +17,8 @@ else
     load('config.mat');
 end
 
-load([pwd sprintf('\Model\Model_Connect4_v%.2d.mat',model_version)]);
-load([pwd sprintf('\Memory\Memory_Connect4_v%.2d.mat',memory_version)]);
+load([pwd '\Model\' sprintf('Model_Connect4_v%.2d.mat',model_version)]);
+load([pwd '\Memory\' sprintf('Memory_Connect4_v%.2d.mat',memory_version)]);
 
 best_player = Agent('best_player', env.state_size, env.action_size, logger, mcts_simulations, cpuct, model);
 current_player = Agent('current_player', env.state_size, env.action_size, logger, mcts_simulations, cpuct, blank_model);
@@ -34,7 +34,7 @@ while model_version < runUntil_model_version
     logger.info('iteration',sprintf('**** Iteration %d ****', iteration))
     [ ~, memory, ~ ] = playMatches(env, best_player, best_player, EPISODES, logger, turns_until_tau0, memory);
     
-    if memory.iLT >0% memory.Memory_Size
+    if memory.iLT == memory.Memory_Size
         
         current_player.train(memory, batch_size);
         
@@ -42,7 +42,7 @@ while model_version < runUntil_model_version
         
         if mod(iteration,5) == 0
             memory_version = memory_version+1;
-            save([pwd sprintf('\Memory\Memory_Connect4_v%.2d.mat',memory_version)], 'memory')
+            save([pwd '\Memory\' sprintf('Memory_Connect4_v%.2d.mat',memory_version)], 'memory')
         end
         
         if iterationWithoutUpgrade >= 5
@@ -61,7 +61,7 @@ while model_version < runUntil_model_version
             if scores.current_player > scores.best_player * SCORING_THRESHOLD
                 model_version = model_version + 1;
                 model = current_player.model;
-                save([pwd sprintf('\Model\Model_Connect4_v%.2d.mat',model_version)], 'model', 'blank_model')
+                save([pwd '\Model\' sprintf('Model_Connect4_v%.2d.mat',model_version)], 'model', 'blank_model')
                 best_player.model = current_player.model;
                 logger.info('tournament',sprintf('New best version = %d',model_version))
                 tryAgain = false;

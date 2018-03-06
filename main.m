@@ -43,6 +43,7 @@ while model_version < runUntil_model_version
         if mod(iteration,5) == 0
             memory_version = memory_version+1;
             save([pwd '\Memory\' sprintf('Memory_Connect4_v%.2d.mat',memory_version)], 'memory')
+            save('config.mat','model_version','memory_version')
         end
         
         if iterationWithoutUpgrade >= 5
@@ -62,6 +63,7 @@ while model_version < runUntil_model_version
                 model_version = model_version + 1;
                 model = current_player.model;
                 save([pwd '\Model\' sprintf('Model_Connect4_v%.2d.mat',model_version)], 'model', 'blank_model')
+                save('config.mat','model_version','memory_version')
                 best_player.model = current_player.model;
                 logger.info('tournament',sprintf('New best version = %d',model_version))
                 tryAgain = false;

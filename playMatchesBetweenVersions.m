@@ -19,7 +19,7 @@ function [ scores, memory, sp_scores ] = playMatchesBetweenVersions( env, player
     if player1version == -1
         player1 = User('player1', env.state_size, env.action_size, logger);
     else
-        load([pwd sprintf('\Model\Model_Connect4_v%.2d.mat',player1version)], 'model')
+        load([pwd '\Model\' sprintf('Model_Connect4_v%.2d.mat',player1version)], 'model')
         player1 = Agent('player1', env.state_size, env.action_size, logger, 20, 1, model);
     end
     
@@ -27,7 +27,7 @@ function [ scores, memory, sp_scores ] = playMatchesBetweenVersions( env, player
     if player2version == -1
         player2 = User('player2', env.state_size, env.action_size, logger);
     else
-        load([pwd sprintf('\Model\Model_Connect4_v%.2d.mat',player2version)], 'model')
+        load([pwd '\Model\' sprintf('Model_Connect4_v%.2d.mat',player2version)], 'model')
         player2 = Agent('player2', env.state_size, env.action_size, logger, 20, 1, model);
     end
 

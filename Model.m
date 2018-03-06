@@ -46,10 +46,12 @@ classdef Model < handle
                 baseLayers = [baseLayers maxPooling2dLayer(1,'Stride',1)];
             end
             
-            layersValue = [baseLayers fullyConnectedLayer(1)];
+            layersValue = [baseLayers fullyConnectedLayer(10)];
+            layersValue = [layersValue fullyConnectedLayer(1)];
             layersValue = [layersValue regressionLayer()];
             
-            layersProb = [baseLayers fullyConnectedLayer((self.input_dim(1) * self.input_dim(2)))];
+            layersProb = [baseLayers fullyConnectedLayer(2*(self.input_dim(1) * self.input_dim(2)))];
+            layersProb = [layersProb fullyConnectedLayer((self.input_dim(1) * self.input_dim(2)))];
             layersProb = [layersProb regressionLayer()];
             
         end

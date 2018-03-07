@@ -20,7 +20,7 @@ function [ scores, memory, sp_scores ] = playMatchesBetweenVersions( env, player
         player1 = User('player1', env.state_size, env.action_size, logger);
     else
         load([pwd '\Model\' sprintf('Model_Connect4_v%.2d.mat',player1version)], 'model')
-        player1 = Agent('player1', env.state_size, env.action_size, logger, 20, 1, model);
+        player1 = Agent('player1', env.state_size, env.action_size, logger, 200, 1, model);
     end
     
     
@@ -28,7 +28,7 @@ function [ scores, memory, sp_scores ] = playMatchesBetweenVersions( env, player
         player2 = User('player2', env.state_size, env.action_size, logger);
     else
         load([pwd '\Model\' sprintf('Model_Connect4_v%.2d.mat',player2version)], 'model')
-        player2 = Agent('player2', env.state_size, env.action_size, logger, 20, 1, model);
+        player2 = Agent('player2', env.state_size, env.action_size, logger, 200, 1, model);
     end
 
     [scores, memory, sp_scores] = playMatches(env, player1, player2, EPISODES, logger, turns_until_tau0, memory, goes_first);

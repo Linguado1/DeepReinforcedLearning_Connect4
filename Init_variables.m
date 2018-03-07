@@ -1,6 +1,6 @@
 %% Init variables
 
-mcts_simulations = 50;
+mcts_simulations = 200;
 cpuct = 1;
 
 batch_size = 1024;

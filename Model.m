@@ -43,14 +43,15 @@ classdef Model < handle
                     'Padding', 'same')];
                 baseLayers = [baseLayers batchNormalizationLayer()];
                 baseLayers = [baseLayers leakyReluLayer];
-                baseLayers = [baseLayers maxPooling2dLayer(1,'Stride',1)];
             end
             
-            layersValue = [baseLayers fullyConnectedLayer(10)];
+            baseLayers = [baseLayers maxPooling2dLayer(1,'Stride',1)];
+            
+            layersValue = [baseLayers fullyConnectedLayer(32)];
             layersValue = [layersValue fullyConnectedLayer(1)];
             layersValue = [layersValue regressionLayer()];
             
-            layersProb = [baseLayers fullyConnectedLayer(2*(self.input_dim(1) * self.input_dim(2)))];
+            layersProb = [baseLayers fullyConnectedLayer(210)];
             layersProb = [layersProb fullyConnectedLayer((self.input_dim(1) * self.input_dim(2)))];
             layersProb = [layersProb regressionLayer()];
             
@@ -68,11 +69,15 @@ classdef Model < handle
             inputToModel_1 = reshape(state.binary(1:(self.input_dim(1) * self.input_dim(2))), self.input_dim(2), self.input_dim(1))';
             inputToModel_2 = reshape(state.binary((1+(self.input_dim(1) * self.input_dim(2))):end), self.input_dim(2), self.input_dim(1))';
             
-            inputToModel_3 = ones(1,(self.input_dim(1) * self.input_dim(2)));
-            inputToModel_3(state.binary(1:(self.input_dim(1) * self.input_dim(2))) == 1) = 0;
-            inputToModel_3(state.binary((1+(self.input_dim(1) * self.input_dim(2))):end) == 1) = 0;
-            inputToModel_3 = reshape(inputToModel_3, self.input_dim(2), self.input_dim(1))';            
+%             inputToModel_3 = ones(1,(self.input_dim(1) * self.input_dim(2)));
+%             inputToModel_3(state.binary(1:(self.input_dim(1) * self.input_dim(2))) == 1) = 0;
+%             inputToModel_3(state.binary((1+(self.input_dim(1) * self.input_dim(2))):end) == 1) = 0;
+%             inputToModel_3 = reshape(inputToModel_3, self.input_dim(2), self.input_dim(1))';            
             
+            inputToModel_3 = zeros(1,(self.input_dim(1) * self.input_dim(2)));
+            inputToModel_3(state.allowedActions) = 1;
+            inputToModel_3 = reshape(inputToModel_3, self.input_dim(2), self.input_dim(1))';
+
             inputToModel = zeros(self.input_dim(1), self.input_dim(2), 3);
             inputToModel(:,:,1) = inputToModel_1;
             inputToModel(:,:,2) = inputToModel_2;

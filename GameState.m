@@ -14,6 +14,7 @@ classdef GameState < handle
         allowedActions
         isEndGame
         winner
+        value
         inputToModel
     end
     
@@ -217,7 +218,7 @@ classdef GameState < handle
             
         end
         
-        function [newState, winner, done] = takeAction(self, action)
+        function [newState, winner, value, done] = takeAction(self, action)
             
             newBoard = self.board;
             newBoard(action) = self.playerTurn;
@@ -225,11 +226,17 @@ classdef GameState < handle
             newState = GameState(newBoard, self.nextTurn);
             
             winner = 0;
+            value = 0;
             done = 0;
             
             if newState.isEndGame
                 winner = newState.winner;
                 done = true;
+                if winner == self.playerTurn
+                    value = 1;
+                elseif winner == self.nextTurn
+                    value = -1;
+                end
             end
             
         end

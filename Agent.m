@@ -69,7 +69,7 @@ classdef Agent < handle
             % Pick the action
             [action, value] = self.chooseAction(pi, values, tau);
             
-            [nextState, ~, ~] = state.takeAction(action);
+            [nextState, ~, ~, ~] = state.takeAction(action);
             
             NN_value = -self.get_preds(nextState);
             
@@ -87,18 +87,18 @@ classdef Agent < handle
             self.logger.trace('simulate',sprintf('CURRENT PLAYER...%d', self.mcts.root.state.playerTurn));
             
             % Move to leaf
-            [leaf, value, done, breadcrumbs] = self.mcts.moveToLeaf();
+            [leaf, winner, value, done, breadcrumbs] = self.mcts.moveToLeaf();
             leaf.state.render_trace('simulate',self.logger)
             
             % Evaluate leaf
-            value = self.evaluateLeaf(leaf, value, done);
+            value = self.evaluateLeaf(leaf, winner, value, done);
             
             % Backfill
             self.mcts.backFill(leaf, value, breadcrumbs);
             
         end
         
-        function value = evaluateLeaf(self, leaf, value, done)
+        function value = evaluateLeaf(self, leaf, winner, value, done)
             
             self.logger.trace('evaluateLeaf','** EVALUATE START **');
             
@@ -110,7 +110,7 @@ classdef Agent < handle
                 probs = probs(allowedActions);
                 
                 for k = 1:length(allowedActions)   
-                    [newState, ~, ~] = leaf.state.takeAction(allowedActions(k));
+                    [newState, ~, ~, ~] = leaf.state.takeAction(allowedActions(k));
                     if ~isfield(self.mcts.tree,newState.id)
                         node = Node(newState);
                         self.mcts.addNode(node);
@@ -126,7 +126,8 @@ classdef Agent < handle
                 end
                 
             else
-                self.logger.trace('evaluateLeaf',sprintf('GAME VALUE FOR %d: %.6f', leaf.playerTurn, value));
+                self.logger.trace('evaluateLeaf',sprintf('END OF GAME. WINNER = %d', winner));
+                self.logger.trace('evaluateLeaf',sprintf('GAME VALUE FOR %d: %.6f', leaf.state.nextTurn, value));                
             end
             
         end
@@ -172,9 +173,6 @@ classdef Agent < handle
 
             value = self.model.NNValue.predict(inputToModel);
             logits = self.model.NNProb.predict(inputToModel);
-%             preds = self.model.NNtrained.predict(inputToModel);
-%             value = preds(1);
-%             logits = preds(2:end);
             allowedActions = state.allowedActions;
             
             mask = true(size(logits));

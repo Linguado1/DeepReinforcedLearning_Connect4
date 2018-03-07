@@ -39,8 +39,8 @@ classdef Game < handle
             gameState = self.gameState;
         end
         
-        function [next_state, winner, done] = step(self, action)
-           [next_state, winner, done] = self.gameState.takeAction(action);
+        function [next_state, winner, value, done] = step(self, action)
+           [next_state, winner, value, done] = self.gameState.takeAction(action);
            self.gameState = next_state;
            
            oldPlayer = self.currentPlayer;

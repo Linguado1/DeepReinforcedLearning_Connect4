@@ -22,15 +22,17 @@ classdef MCTS < handle
             self.Alpha = Alpha;
         end
         
-        function [currentNode, value, done, breadcrumbs] = moveToLeaf(self)
+        function [currentNode, winner, value, done, breadcrumbs] = moveToLeaf(self)
             
             self.logger.trace('moveToLeaf','**** MOVING TO LEAF ****');
             
             breadcrumbs = [];
             currentNode = self.tree.(self.root.id);
+            playerTurn = currentNode.playerTurn;
             
             done = 0;
             value = 0;
+            winner = 0;
             
             while ~currentNode.isLeaf()
                 
@@ -83,8 +85,11 @@ classdef MCTS < handle
                 self.logger.trace('moveToLeaf',sprintf('action with highest Q + U...%d', simulationAction));
 
                 % value of the newState for the next player
-                [~, value, done] = currentNode.state.takeAction(simulationAction);
+                [~, winner, value, done] = currentNode.state.takeAction(simulationAction);
+
                 currentNode = self.tree.(simulationEdge.outNode.id);
+                currentNode.playerTurn = playerTurn;
+                
                 breadcrumbs = [breadcrumbs simulationEdge];
                   
                 self.logger.trace('moveToLeaf',sprintf('DONE...%d',done));
@@ -97,7 +102,7 @@ classdef MCTS < handle
             
             self.logger.trace('backFill','**** DOING BACKFILL ****');
             
-            currentPlayer = leaf.state.playerTurn;
+            currentPlayer = leaf.state.nextTurn;
             
             for k = 1:length(breadcrumbs)
                 thisEdge = breadcrumbs(k);
@@ -109,18 +114,19 @@ classdef MCTS < handle
                     direction = -1;
                 end
 
-                for k = 1:length(self.tree.(thisEdge.inNode.id).edges)
-                    if strcmp(self.tree.(thisEdge.inNode.id).edges(k).id, thisEdge.id)
+                % Encontra thisEdge na arvore
+                for i = 1:length(self.tree.(thisEdge.inNode.id).edges)
+                    if strcmp(self.tree.(thisEdge.inNode.id).edges(i).id, thisEdge.id)
                         break
                     end
                 end
                 
-                self.tree.(thisEdge.inNode.id).edges(k).stats_N = self.tree.(thisEdge.inNode.id).edges(k).stats_N + 1;
-                self.tree.(thisEdge.inNode.id).edges(k).stats_W = self.tree.(thisEdge.inNode.id).edges(k).stats_W + value * direction;
-                self.tree.(thisEdge.inNode.id).edges(k).stats_Q = self.tree.(thisEdge.inNode.id).edges(k).stats_W /...
-                    self.tree.(thisEdge.inNode.id).edges(k).stats_N;
+                self.tree.(thisEdge.inNode.id).edges(i).stats_N = self.tree.(thisEdge.inNode.id).edges(i).stats_N + 1;
+                self.tree.(thisEdge.inNode.id).edges(i).stats_W = self.tree.(thisEdge.inNode.id).edges(i).stats_W + value * direction;
+                self.tree.(thisEdge.inNode.id).edges(i).stats_Q = self.tree.(thisEdge.inNode.id).edges(i).stats_W /...
+                    self.tree.(thisEdge.inNode.id).edges(i).stats_N;
                 
-                thisEdge = self.tree.(thisEdge.inNode.id).edges(k);
+                thisEdge = self.tree.(thisEdge.inNode.id).edges(i);
                 self.logger.trace('backFill',sprintf('updating edge with value %.6f for player %d... N = %d, W = %.6f, Q = %.6f',...
                     value * direction, playerTurn, thisEdge.stats_N, thisEdge.stats_W, thisEdge.stats_Q));
 

@@ -66,7 +66,7 @@ function [ scores, memory, sp_scores ] = playMatches( env, player1, player2, EPI
             render_pi(env.grid_shape, state, pi, MCTS_value, NN_value, logger);
             
             % Do the action
-            % the value of the newState from the POV of the new playerTurn i.e. 2 if the previous player played a winning move
+            % the value of the newState from the POV of the new playerTurn i.e. -1 if the previous player played a winning move
             [state, winner, done] = env.step(action);
             
             if ~isempty(memory)
